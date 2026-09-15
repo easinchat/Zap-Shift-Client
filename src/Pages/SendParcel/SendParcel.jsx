@@ -2,6 +2,9 @@ import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useLoaderData } from "react-router";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import { use } from "react";
+import useAuth from "../../Hooks/useAuth";
 
 const SendParcel = () => {
   const {
@@ -11,6 +14,9 @@ const SendParcel = () => {
     control,
     formState: { errors },
   } = useForm();
+
+  const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
 
   const serviceCenters = useLoaderData();
   const regionsDuplicate = serviceCenters.map((c) => c.region);
@@ -59,6 +65,10 @@ const SendParcel = () => {
       confirmButtonText: "I agree",
     }).then((result) => {
       if (result.isConfirmed) {
+        //save parcel info to the database
+        axiosSecure.post("/parcels", data).then((res) => {
+          ("After saving parcel", console.log(res.data));
+        });
         //
         // Swal.fire({
         //   title: "Deleted!",
@@ -70,7 +80,7 @@ const SendParcel = () => {
   };
   return (
     <div>
-      <h2 className="font-bold text-4xl">Send A Parcel</h2>
+      <h2 className="font-bold text-4xl mt-8">Send A Parcel</h2>
       <form
         onSubmit={handleSubmit(handleSendPercel)}
         className="mt-12 text-black"
@@ -133,6 +143,7 @@ const SendParcel = () => {
             <label className="label">Sender Name</label>
             <input
               type="text"
+              defaultValue={user?.displayName}
               className="input w-full"
               {...register("senderName")}
               placeholder="Sender Name"
@@ -142,6 +153,7 @@ const SendParcel = () => {
             <label className="label">Sender Email</label>
             <input
               type="text"
+              defaultValue={user?.email}
               className="input w-full"
               {...register("senderEmail")}
               placeholder="Sender Email"

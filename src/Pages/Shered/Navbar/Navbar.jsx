@@ -27,6 +27,13 @@ const Navbar = () => {
       <li>
         <NavLink to="/send-parcel">Send A Percel</NavLink>
       </li>
+      {user && (
+        <>
+          <li>
+            <NavLink to="/dashboard/my-parcels">MY Percels</NavLink>
+          </li>
+        </>
+      )}
     </>
   );
 
